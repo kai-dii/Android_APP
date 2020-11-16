@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".LineChartActivity">
+
+
+
+    <Button
+        android:id="@id/btn"
+        android:text="選擇日期"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart_line"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn" />
+
+</LinearLayout>
