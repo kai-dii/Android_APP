@@ -11,14 +11,18 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import java.util.ArrayList;
 import java.util.Calendar;
+
 
 public class LineChartActivity extends AppCompatActivity  {
 
@@ -34,6 +38,8 @@ public class LineChartActivity extends AppCompatActivity  {
     public String getChooseDate="";
     public String copy="";
     private StringBuffer  stringBuffer=new StringBuffer();
+    private static ArrayList<String> time_x = new ArrayList<>();
+    private  int count=0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +50,7 @@ public class LineChartActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v)
             {
+                //uilineMpChart(mLineChart,-1,-1,-1);
                 final Calendar c = Calendar.getInstance();
                 mYear = c.get(Calendar.YEAR);
                 mMonth = c.get(Calendar.MONTH);
@@ -58,19 +65,18 @@ public class LineChartActivity extends AppCompatActivity  {
                         //new_s= getChooseDate.substring(0);
                         //Log.v("new_s",new_s);
                         Log.v("CHOOSE",getChooseDate);
+                        lineMpChart(mLineChart,-1,-1,-1);//init
                         mHandler.post(mRunnable);
-
                     }
 
                 }, mYear,mMonth, mDay).show();
-
             }
 
         });
 
         Bundle bundle = getIntent().getExtras();
         time = bundle.getStringArrayList("creat_at");
-        Log.v("time_B", time.toString());
+        Log.v("time_B", Integer.toString( time.size()));
         petfood_weight = bundle.getStringArrayList("petfood_weight");
         Log.v("petfood_weight_B", petfood_weight.toString());
         Leaving_petfood = bundle.getStringArrayList("Leavings_petfood");
@@ -128,29 +134,21 @@ public class LineChartActivity extends AppCompatActivity  {
             stringBuffer.delete(0,l);
             stringBuffer.insert(0,getChooseDate);
             Log.v("STRBUFF",stringBuffer.toString());
-
         }
-
-
     }
 
 
     private void addEnrtyPoint(){
 
-
         for (int i=0;i<petfood_weight.size();i++)
         {
-            Log.v("new_time",time.get(i).substring(0,10));
-            Log.v("new_date",getChooseDate);
             if((time.get(i).substring(0,10)).equals(getChooseDate))
             {
                 float point = Float.parseFloat(petfood_weight.get(i));
-                lineMpChart(mLineChart, i, point, 1);
+                lineMpChart(mLineChart, i, point, 1); //Float.parseFloat( time.get(i).substring(11,19))
+                time_x.add( time.get(i).substring(11,19));
+                //Log.v("TIMEX",String.valueOf( time_x.size()));
             }
-            Log.v("CHOOSE_1",time.get(i).substring(0,10));
-            Log.v("equal____",String.valueOf((time.get(i).substring(0,10)).equals(getChooseDate)));
-            Log.v("COMPARE",String.valueOf( time.get(i).substring(0,10).compareTo(getChooseDate)));
-            Log.v("STRBUFF_",stringBuffer.toString());
 
         }
         for (int i=0;i<Leaving_petfood.size();i++)
@@ -158,12 +156,11 @@ public class LineChartActivity extends AppCompatActivity  {
             if(time.get(i).substring(0,10).equals(getChooseDate))
             {
                 float point = Float.parseFloat(Leaving_petfood.get(i));
-                lineMpChart(mLineChart, i, point, 2);
+                lineMpChart(mLineChart,i, point, 2);//Float.parseFloat( time.get(i).substring(12,19))
             }
 
-            Log.v("STRING_DATE_2",time.get(i).substring(0,10));
         }
-        Log.v("SIZE",Integer.toString( petfood_weight.size()));
+
     }
     private void initRunnable(){
         mHandler=new Handler() ;
@@ -171,71 +168,65 @@ public class LineChartActivity extends AppCompatActivity  {
             @Override
             public void run() {
                 addEnrtyPoint();
-
             }
         };
-
     }
-    public static void lineMpChart(LineChart lineChart, float time, float value,int many) {
 
+    public static void lineMpChart(LineChart lineChart, float time, float value,int many)
+    {
         Log.v("time+",Float.toString(time));
         if (lineChart.getData() == null) {
+                LineData lineData = new LineData();
+                lineChart.setData(lineData);
+                lineChart.setTouchEnabled(true);
+                lineChart.setDragEnabled(true);
+                lineChart.setScaleEnabled(true);
+                lineChart.setPinchZoom(true);
+                lineChart.setDragDecelerationEnabled(true);
 
-            LineData lineData = new LineData();
-            lineChart.setData(lineData);
-            lineChart.setTouchEnabled(true);
-            lineChart.setDragEnabled(true);
-            lineChart.setScaleEnabled(true);
-            lineChart.setPinchZoom(true);
-
-
-            lineChart.setDoubleTapToZoomEnabled(false);
-            lineChart.setDragDecelerationEnabled(true);
-            lineChart.setDragDecelerationFrictionCoef(0.9f);
-            lineChart.getAxisRight().setEnabled(false);
-            lineChart.setHighlightPerDragEnabled(true);
-            lineChart.setHighlightPerTapEnabled(true);
-            lineChart.setDragEnabled(true);
-            lineChart.setMaxHighlightDistance(500f);
-
-
-            XAxis xAxis = lineChart.getXAxis();
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-            xAxis.setLabelCount(15);
-            xAxis.setGranularity(2);
-            xAxis.setTextColor(Color.RED);
-            xAxis.setGridColor(Color.RED);
-            xAxis.setDrawLabels(true);
-            xAxis.setEnabled(true);
-
-            YAxis yAxis = lineChart.getAxisLeft();
-            yAxis.setTextColor(Color.RED);
-            yAxis.setGridColor(Color.RED);
-            yAxis.setLabelCount(10);
-            yAxis.setAxisMinimum(0);
-            yAxis.setAxisMaximum(1000);
+                lineChart.setDoubleTapToZoomEnabled(false);
+                lineChart.setDragDecelerationEnabled(true);
+                lineChart.setDragDecelerationFrictionCoef(0.9f);
+                lineChart.getAxisRight().setEnabled(false);
+                lineChart.setHighlightPerDragEnabled(true);
+                lineChart.setHighlightPerTapEnabled(true);
+                lineChart.setDragEnabled(true);
+                lineChart.setMaxHighlightDistance(500f);
 
 
 
+            //MyXFormatter formatter = new MyXFormatter(time_x);
+                XAxis xAxis = lineChart.getXAxis();
+                xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                xAxis.setLabelCount(15);
+                xAxis.setGranularity(1);
+                xAxis.setTextColor(Color.RED);
+                xAxis.setGridColor(Color.RED);
+                xAxis.setDrawLabels(true);
+                xAxis.setEnabled(true);
+                //xAxis.setValueFormatter(formatter);
 
-        } else {
+                YAxis yAxis = lineChart.getAxisLeft();
+                yAxis.setTextColor(Color.RED);
+                yAxis.setGridColor(Color.RED);
+                yAxis.setLabelCount(10);
+                yAxis.setAxisMinimum(0);
+                yAxis.setAxisMaximum(1000);
+        }
+        else {
             LineData lineData = lineChart.getLineData();
             ILineDataSet iLineDataSet = lineData.getDataSetByIndex(0);
             ILineDataSet iLineDataSet1=lineData.getDataSetByIndex(1);
             if (iLineDataSet == null || iLineDataSet1==null) {
                 iLineDataSet = createLineSet();
                 iLineDataSet1=createLineSet2();
-
                 lineData.addDataSet(iLineDataSet);
                 lineData.addDataSet(iLineDataSet1);
-
-
             }
             if (iLineDataSet.getEntryCount() > 50||iLineDataSet1.getEntryCount()>50) {
                 iLineDataSet.removeFirst();
                 iLineDataSet1.removeFirst();
             }
-
             if(many==1)
             {
                 iLineDataSet.addEntry(new Entry(time, value, many));
@@ -244,11 +235,15 @@ public class LineChartActivity extends AppCompatActivity  {
             {
                 iLineDataSet1.addEntry(new Entry(time,value,many));
             }
-
             lineData.notifyDataChanged();
             lineChart.notifyDataSetChanged();
             lineChart.moveViewToX(time);
         }
+       if(value==-1 && time==-1 && many==-1)
+       {
+           lineChart.clearValues();
+           lineChart.invalidate();
+       }
     }
 
     private static LineDataSet createLineSet() {
@@ -268,5 +263,18 @@ public class LineChartActivity extends AppCompatActivity  {
         return lineDataSet1;
     }
 
-
+    public static class MyXFormatter extends ValueFormatter implements IAxisValueFormatter {
+        private ArrayList<String> mValues;
+        public MyXFormatter(ArrayList<String> values) {
+            this.mValues = values;
+            Log.v("mValue",String.valueOf( mValues.size()));
+        }
+        private static final String TAG = "MyXFormatter";
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            // "value" represents the position of the label on the axis (x or y)
+            Log.v(TAG, "----->getFormattedValue: "+value);
+            return  mValues.get((int) value% mValues.size() );
+        }
+    }
 }
