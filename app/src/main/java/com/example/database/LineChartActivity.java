@@ -48,7 +48,7 @@ public class LineChartActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_line_chart);
         mLineChart = findViewById(R.id.chart_line);
         btn = (Button)findViewById(R.id.btn);
-        btn.setOnClickListener(new View.OnClickListener() {
+        btn.setOnClickListener(new View.OnClickListener() { //按鈕監聽  日曆
             @Override
             public void onClick(View v)
             {
@@ -202,6 +202,7 @@ public class LineChartActivity extends AppCompatActivity  {
             xAxis.setGranularity(1);
             xAxis.setTextColor(Color.RED);
             xAxis.setGridColor(Color.RED);
+           xAxis.setLabelRotationAngle(15);
             xAxis.setDrawLabels(true);
             xAxis.setEnabled(true);
             ValueFormatter valueFormatter = new ValueFormatter() {
