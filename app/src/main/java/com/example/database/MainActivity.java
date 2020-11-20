@@ -127,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             try {
 
-               URL url = new URL("http://192.168.1.28/GetData.php");//http://172.20.10.2/GetData.php
+               URL url = new URL("http://192.168.1.28/GetData.php");
+                //URL url = new URL("http://172.20.10.2/GetData.php");//http://172.20.10.2/GetData.php
                HttpURLConnection connection=(HttpURLConnection)url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setDoInput(true);
