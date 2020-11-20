@@ -41,7 +41,6 @@ public class LineChartActivity extends AppCompatActivity  {
     public String getChooseDate="";
     public String copy="";
     private StringBuffer  stringBuffer=new StringBuffer();
-    private  ArrayList<String> time_x = new ArrayList<>();
     private  int count=0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,7 +52,6 @@ public class LineChartActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v)
             {
-                //uilineMpChart(mLineChart,-1,-1,-1);
                 final Calendar c = Calendar.getInstance();
                 mYear = c.get(Calendar.YEAR);
                 mMonth = c.get(Calendar.MONTH);
@@ -65,8 +63,6 @@ public class LineChartActivity extends AppCompatActivity  {
                         setDateFormat(year, month, day);
                         String format = "您選擇的日期為:" + getChooseDate;
                         Toast.makeText(LineChartActivity.this,format,Toast.LENGTH_LONG).show();
-                        //new_s= getChooseDate.substring(0);
-                        //Log.v("new_s",new_s);
                         Log.v("CHOOSE",getChooseDate);
                         mLineChart.clearValues();
                         mHandler.post(mRunnable);
@@ -149,9 +145,7 @@ public class LineChartActivity extends AppCompatActivity  {
             {
                 float point = Float.parseFloat(petfood_weight.get(i));
                 lineMpChart(mLineChart, i, point, 1); //Float.parseFloat( time.get(i).substring(11,19))
-                time_x.add( datetime.get(i).substring(11,19));
-                //Log.v("TIMEX",String.valueOf( time_x.size()));
-                //Log.v("time_len",time.get(i));
+
 
             }
         }
@@ -202,7 +196,6 @@ public class LineChartActivity extends AppCompatActivity  {
 
 
 
-            Log.v("test_timex", Integer.toString(time_x.size()));
             XAxis xAxis = lineChart.getXAxis();
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
             xAxis.setLabelCount(15);
