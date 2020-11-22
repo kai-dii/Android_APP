@@ -5,8 +5,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -57,8 +59,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView mRecyclerView;
-    private Button btn_1,btn_2,btn_bar,btn_line;
+    private Button btn_line;
     private TextView view;
     private String result;
     private ArrayList<Integer> number=new ArrayList<>();
@@ -69,56 +70,32 @@ public class MainActivity extends AppCompatActivity {
     private Intent intent=null;
 
 
-
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btn_1=findViewById(R.id.btn_DATA);
-        btn_1.setOnClickListener(mbtnClickListener);
-        btn_2=findViewById(R.id.btn_send);
-        btn_2.setOnClickListener(mbtnClickListener);
         view=findViewById(R.id.view_1);
-        btn_bar=findViewById(R.id.btn_bar);
-        btn_bar.setOnClickListener(mbtnClickListener);
         btn_line=findViewById(R.id.btn_line);
         btn_line.setOnClickListener(mbtnClickListener);
         Thread thread = new Thread(mThread);
         thread.start();
-
     }
-
 
     private View.OnClickListener mbtnClickListener=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int btnid = v.getId();
-
-            if (btnid == R.id.btn_send) {
-                Intent intent = new Intent(MainActivity.this, DataActivity.class);
-                startActivity(intent);
-            } else if (btnid == R.id.btn_bar) {
-                Bundle bundle = new Bundle();
-                bundle.putIntegerArrayList("number", number);
-                bundle.putStringArrayList("creat_at", time);
-                bundle.putStringArrayList("petfood_weight", petfood_weight);
-                bundle.putStringArrayList("Leavings_petfood", Leaving_petfood);
-
-                intent = new Intent(MainActivity.this, BarChartActivity.class);
-                intent.putExtras(bundle);
-                startActivity(intent);
-            } else if (btnid == R.id.btn_line) {
-                Bundle bundle = new Bundle();
-                bundle.putIntegerArrayList("number", number);
-                bundle.putStringArrayList("creat_at", time);
-                bundle.putStringArrayList("petfood_weight", petfood_weight);
-                bundle.putStringArrayList("Leavings_petfood", Leaving_petfood);
+            Bundle bundle = new Bundle();
+            bundle.putIntegerArrayList("number", number);
+            bundle.putStringArrayList("creat_at", time);
+            bundle.putStringArrayList("petfood_weight", petfood_weight);
+            bundle.putStringArrayList("Leavings_petfood", Leaving_petfood);
+           if (btnid == R.id.btn_line) {
                 intent = new Intent(MainActivity.this, LineChartActivity.class);
                 intent.putExtras(bundle);
                 startActivity(intent);
-            }
+           }
 
         }
     };
@@ -129,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
                URL url = new URL("http://192.168.1.28/GetData.php");
                 //URL url = new URL("http://172.20.10.2/GetData.php");//http://172.20.10.2/GetData.php
-               HttpURLConnection connection=(HttpURLConnection)url.openConnection();
+                HttpURLConnection connection=(HttpURLConnection)url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setDoInput(true);
                 connection.setDoOutput(true);

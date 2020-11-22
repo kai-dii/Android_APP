@@ -1,10 +1,15 @@
 package com.example.database;
 import android.app.DatePickerDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Toast;
@@ -21,10 +26,20 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import static android.widget.Toast.LENGTH_LONG;
 
 
 public class LineChartActivity extends AppCompatActivity  {
@@ -36,43 +51,23 @@ public class LineChartActivity extends AppCompatActivity  {
     private static ArrayList<String> datetime = new ArrayList<>();
     private static ArrayList<String> petfood_weight = new ArrayList<>();
     private ArrayList<String> Leaving_petfood = new ArrayList<>();
-    private Button btn;
+    private Button btn,btn_update;
     private  int mYear,mMonth,mDay;
     public String getChooseDate="";
     public String copy="";
     private StringBuffer  stringBuffer=new StringBuffer();
     private  int count=0;
+    private static ArrayList<String> datetime_get = new ArrayList<>();
+    private BroadcastReceiver broadcastReceiver;
+    private String result="";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_line_chart);
         mLineChart = findViewById(R.id.chart_line);
         btn = (Button)findViewById(R.id.btn);
-        btn.setOnClickListener(new View.OnClickListener() { //按鈕監聽  日曆
-            @Override
-            public void onClick(View v)
-            {
-                final Calendar c = Calendar.getInstance();
-                mYear = c.get(Calendar.YEAR);
-                mMonth = c.get(Calendar.MONTH);
-                mDay = c.get(Calendar.DAY_OF_MONTH);
-                new DatePickerDialog(LineChartActivity.this, new DatePickerDialog.OnDateSetListener()
-                {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int day) {
-                        setDateFormat(year, month, day);
-                        String format = "您選擇的日期為:" + getChooseDate;
-                        Toast.makeText(LineChartActivity.this,format,Toast.LENGTH_LONG).show();
-                        Log.v("CHOOSE",getChooseDate);
-                        mLineChart.clearValues();
-                        mHandler.post(mRunnable);
-                    }
-
-                }, mYear,mMonth, mDay).show();
-            }
-
-        });
-
+        btn_update=findViewById(R.id.btn_re);
         Bundle bundle = getIntent().getExtras();
         datetime = bundle.getStringArrayList("creat_at");
         Log.v("time_B", Integer.toString( datetime.size()));
@@ -81,12 +76,58 @@ public class LineChartActivity extends AppCompatActivity  {
         Leaving_petfood = bundle.getStringArrayList("Leavings_petfood");
         Log.v("Leaving_petfood_B", Leaving_petfood.toString());
 
+        btn.setOnClickListener(new View.OnClickListener() { //按鈕監聽  日曆
+            @Override
+            public void onClick(View v)
+            {
+                if(v.getId()==R.id.btn)
+                {
+
+
+                    final Calendar c = Calendar.getInstance();
+                    mYear = c.get(Calendar.YEAR);
+                    mMonth = c.get(Calendar.MONTH);
+                    mDay = c.get(Calendar.DAY_OF_MONTH);
+                    new DatePickerDialog(LineChartActivity.this, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int day) {
+                            setDateFormat(year, month, day);
+                            String format = "您選擇的日期為:" + getChooseDate;
+                            Toast.makeText(LineChartActivity.this, format, LENGTH_LONG).show();
+                            Log.v("CHOOSE", getChooseDate);
+                            mLineChart.clearValues();
+                            mHandler.post(mRunnable);
+                        }
+
+                    }, mYear, mMonth, mDay).show();
+                }
+
+            }
+
+        });
+
+    btn_update.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(v.getId()==R.id.btn_re)
+            {
+               Thread thread=new Thread(mThread);
+               thread.start();
+
+            }
+        }
+    });
+
+
 
         lineMpChart(mLineChart, 0, 0, 0);
         initRunnable();
         mHandler.postDelayed(mRunnable, 100);
 
+
+
     }
+
     private void setDateFormat(int year,int monthOfYear,int dayOfMonth)
     {
 
@@ -171,7 +212,7 @@ public class LineChartActivity extends AppCompatActivity  {
     }
 
     @SuppressWarnings("deprecation")
-    public void lineMpChart(LineChart lineChart, final int time, float value, int many) {
+    public void lineMpChart(LineChart lineChart,     int time, float value, int many) {
         Log.v("time+", Integer.toString(time));
 
 
@@ -202,23 +243,10 @@ public class LineChartActivity extends AppCompatActivity  {
             xAxis.setGranularity(1);
             xAxis.setTextColor(Color.RED);
             xAxis.setGridColor(Color.RED);
-           xAxis.setLabelRotationAngle(15);
+            xAxis.setLabelRotationAngle(15);
             xAxis.setDrawLabels(true);
             xAxis.setEnabled(true);
-            ValueFormatter valueFormatter = new ValueFormatter() {
-                @Override
-                public String getFormattedValue(float value) {
-                    if (value >= 0) {
-                        return datetime.get((int) value).substring(11,19);
-                    }
-                    else
-                    {
-                        return "";
-                    }
 
-                }
-            };
-            xAxis.setValueFormatter(valueFormatter);
             xAxis.setAvoidFirstLastClipping(true);
 
             YAxis yAxis = lineChart.getAxisLeft();
@@ -230,7 +258,20 @@ public class LineChartActivity extends AppCompatActivity  {
         } else {
 
             XAxis xAxis = lineChart.getXAxis();
+            ValueFormatter valueFormatter = new ValueFormatter() {
+                @Override
+                public String getFormattedValue(float value) {
+                    if (value >= 0 ) {
+                        return datetime.get((int) value).substring(11,19);
+                    }
+                    else
+                    {
+                        return "";
+                    }
 
+                }
+            };
+            xAxis.setValueFormatter(valueFormatter);
             LineData lineData = lineChart.getLineData();
 
             ILineDataSet iLineDataSet = lineData.getDataSetByIndex(0);
@@ -276,6 +317,66 @@ public class LineChartActivity extends AppCompatActivity  {
         return lineDataSet1;
     }
 
+    private Runnable mThread=new Runnable() {
+        @Override
+        public void run() {
+            try {
+
+                URL url = new URL("http://192.168.1.28/GetData.php");
+                //URL url = new URL("http://172.20.10.2/GetData.php");//http://172.20.10.2/GetData.php
+                HttpURLConnection connection=(HttpURLConnection)url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.connect();
+
+                Log.v("Resp1",Integer.toString(connection.getResponseCode()));
+                int responseCode=connection.getResponseCode();
+
+                if(responseCode==HttpURLConnection.HTTP_OK)
+                {
+                    Log.v("HTTP_OK","OK");
+                    InputStream inputStream=connection.getInputStream();
+                    BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(inputStream));
+                    String s="";
+                    String line=null;
+                    while ((line=bufferedReader.readLine())!=null)
+                    {
+                        s+=line+"\n";
+                    }
+                    inputStream.close();
+                    result=s;
+                }
+                datetime.clear();
+                petfood_weight.clear();
+                Leaving_petfood.clear();
+
+                JSONArray array = new JSONArray(result);
+                for (int i=0;i<array.length();i++)
+                {
+
+                    JSONObject jsonObject=array.getJSONObject(i);
+                    String b=jsonObject.getString("creat_at");
+                    datetime.add(jsonObject.getString("creat_at"));
+                    String c= jsonObject.getString("petfood_weight");
+                    petfood_weight.add(jsonObject.getString("petfood_weight"));
+                    String d=jsonObject.getString("Leavings_petfood");
+                    Leaving_petfood.add(jsonObject.getString("Leavings_petfood"));
+
+                }
+
+                mLineChart.clearValues();
+                mHandler.post(mRunnable);
 
 
+            }
+            catch (Exception e)
+            {
+                result=e.toString();
+                Log.v("Wrong",e.toString());
+            }
+
+
+        }
+    };
 }
