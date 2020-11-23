@@ -212,7 +212,7 @@ public class LineChartActivity extends AppCompatActivity  {
     }
 
     @SuppressWarnings("deprecation")
-    public void lineMpChart(LineChart lineChart,     int time, float value, int many) {
+    public void lineMpChart(LineChart lineChart, int  time, float value, int many) {
         Log.v("time+", Integer.toString(time));
 
 
@@ -261,7 +261,8 @@ public class LineChartActivity extends AppCompatActivity  {
             ValueFormatter valueFormatter = new ValueFormatter() {
                 @Override
                 public String getFormattedValue(float value) {
-                    if (value >= 0 ) {
+                    Log.v("get_ch",getChooseDate);
+                    if (value >= 0 && datetime.get((int)value).substring(0,10).equals(getChooseDate)) {
                         return datetime.get((int) value).substring(11,19);
                     }
                     else
@@ -271,14 +272,18 @@ public class LineChartActivity extends AppCompatActivity  {
 
                 }
             };
+
             xAxis.setValueFormatter(valueFormatter);
             LineData lineData = lineChart.getLineData();
 
             ILineDataSet iLineDataSet = lineData.getDataSetByIndex(0);
             ILineDataSet iLineDataSet1 = lineData.getDataSetByIndex(1);
+
+
             if (iLineDataSet == null || iLineDataSet1 == null) {
                 iLineDataSet = createLineSet();
                 iLineDataSet1 = createLineSet2();
+
                 lineData.addDataSet(iLineDataSet);
                 lineData.addDataSet(iLineDataSet1);
 
@@ -292,6 +297,7 @@ public class LineChartActivity extends AppCompatActivity  {
             } else if (many == 2) {
                 iLineDataSet1.addEntry(new Entry(time, value, many));
             }
+
             lineData.notifyDataChanged();
             lineChart.notifyDataSetChanged();
             lineChart.moveViewToX(time);
@@ -306,6 +312,7 @@ public class LineChartActivity extends AppCompatActivity  {
         lineDataSet.setDrawValues(true);//顯示數值
         lineDataSet.setHighlightEnabled(true);
         lineDataSet.setHighLightColor(Color.parseColor("#FF0000"));
+
         return lineDataSet;
     }
     private static LineDataSet createLineSet2() {
@@ -314,6 +321,8 @@ public class LineChartActivity extends AppCompatActivity  {
         lineDataSet1.setColor(Color.YELLOW);
         lineDataSet1.setHighlightEnabled(true);
         lineDataSet1.setHighLightColor(Color.parseColor("#FF0000"));
+
+
         return lineDataSet1;
     }
 
