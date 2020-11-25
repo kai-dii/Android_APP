@@ -262,7 +262,7 @@ public class LineChartActivity extends AppCompatActivity  {
                 @Override
                 public String getFormattedValue(float value) {
                     Log.v("get_ch",getChooseDate);
-                    if (value >= 0 && datetime.get((int)value).substring(0,10).equals(getChooseDate)) {
+                    if (value >= 0 && datetime.get((int)value).substring(0,10).equals(getChooseDate)&&value <= datetime.size()) {
                         return datetime.get((int) value).substring(11,19);
                     }
                     else
