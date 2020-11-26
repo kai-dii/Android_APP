@@ -162,19 +162,22 @@ public class LineChartActivity extends AppCompatActivity  {
 
     private void addEnrtyPoint(){
 
+        int n=0;
         for (int i=0;i<petfood_weight.size();i++)
         {
             if((datetime.get(i).substring(0,10)).equals(getChooseDate))
             {
+                n++;
                 float point = Float.parseFloat(petfood_weight.get(i));
                 lineMpChart(mLineChart, i, point, 1); //Float.parseFloat( time.get(i).substring(11,19))
                 float points = Float.parseFloat(Leaving_petfood.get(i));
                 lineMpChart(mLineChart,i, points, 2);
-
             }
         }
-
-
+        if(n==0)
+        {
+            Toast.makeText(LineChartActivity.this,"今天無任何出料的紀錄",LENGTH_LONG).show();
+        }
     }
     private void initRunnable(){
         mHandler=new Handler() ;
@@ -285,7 +288,7 @@ public class LineChartActivity extends AppCompatActivity  {
     private static LineDataSet createLineSet2() {
         LineDataSet lineDataSet1 = new LineDataSet(null, "飼料剩下重量(公克g)");
         lineDataSet1.setDrawValues(true);
-        lineDataSet1.setColor(Color.YELLOW);
+        lineDataSet1.setColor(Color.DKGRAY);
         lineDataSet1.setHighlightEnabled(true);
         lineDataSet1.setHighLightColor(Color.parseColor("#FF0000"));
 

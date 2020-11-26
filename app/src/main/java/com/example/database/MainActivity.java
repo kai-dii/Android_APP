@@ -118,13 +118,13 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("Wrong",e.toString());
             }
 
-            runOnUiThread(new Runnable() {
+            /*runOnUiThread(new Runnable() {
                 public void run() {
 
-                        view.setText(JcT); // 更改顯示文字
+                        //view.setText(JcT); // 更改顯示文字
 
                 }
-            });
+            });*/
         }
     };
 
