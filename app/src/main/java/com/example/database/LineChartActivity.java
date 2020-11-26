@@ -168,19 +168,12 @@ public class LineChartActivity extends AppCompatActivity  {
             {
                 float point = Float.parseFloat(petfood_weight.get(i));
                 lineMpChart(mLineChart, i, point, 1); //Float.parseFloat( time.get(i).substring(11,19))
-
+                float points = Float.parseFloat(Leaving_petfood.get(i));
+                lineMpChart(mLineChart,i, points, 2);
 
             }
         }
-        for (int i=0;i<Leaving_petfood.size();i++)
-        {
-            if(datetime.get(i).substring(0,10).equals(getChooseDate))
-            {
-                float point = Float.parseFloat(Leaving_petfood.get(i));
-                lineMpChart(mLineChart,i, point, 2);//Float.parseFloat( time.get(i).substring(12,19))
-            }
 
-        }
 
     }
     private void initRunnable(){
