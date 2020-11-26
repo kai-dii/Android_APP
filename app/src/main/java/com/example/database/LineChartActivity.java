@@ -1,6 +1,5 @@
 package com.example.database;
 import android.app.DatePickerDialog;
-import android.content.BroadcastReceiver;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,10 +18,8 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,27 +27,21 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
-
 import static android.widget.Toast.LENGTH_LONG;
-
 
 public class LineChartActivity extends AppCompatActivity  {
 
     private LineChart mLineChart;
     private Runnable mRunnable;
     private Handler mHandler;
-    private int i = 0;
     private static ArrayList<String> datetime = new ArrayList<>();
     private static ArrayList<String> petfood_weight = new ArrayList<>();
     private ArrayList<String> Leaving_petfood = new ArrayList<>();
     private Button btn,btn_update;
     private  int mYear,mMonth,mDay;
     public String getChooseDate="";
-    public String copy="";
     private StringBuffer  stringBuffer=new StringBuffer();
-    private  int count=0;
     private static ArrayList<String> datetime_get = new ArrayList<>();
-    private BroadcastReceiver broadcastReceiver;
     private String result="";
 
     @Override
@@ -122,7 +113,6 @@ public class LineChartActivity extends AppCompatActivity  {
 
     private void setDateFormat(int year,int monthOfYear,int dayOfMonth)
     {
-
         if(dayOfMonth<10 && monthOfYear>=9)
         {
             getChooseDate =  String.valueOf(year) + "-"
@@ -217,7 +207,6 @@ public class LineChartActivity extends AppCompatActivity  {
             lineChart.setScaleEnabled(true);
             lineChart.setPinchZoom(true);
             lineChart.setDragDecelerationEnabled(true);
-
             lineChart.setDoubleTapToZoomEnabled(false);
             lineChart.setDragDecelerationEnabled(true);
             lineChart.setDragDecelerationFrictionCoef(0.9f);
@@ -226,8 +215,6 @@ public class LineChartActivity extends AppCompatActivity  {
             lineChart.setHighlightPerTapEnabled(true);
             lineChart.setDragEnabled(true);
             lineChart.setMaxHighlightDistance(500f);
-
-
 
             XAxis xAxis = lineChart.getXAxis();
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -238,8 +225,8 @@ public class LineChartActivity extends AppCompatActivity  {
             xAxis.setLabelRotationAngle(15);
             xAxis.setDrawLabels(true);
             xAxis.setEnabled(true);
-
             xAxis.setAvoidFirstLastClipping(true);
+
 
             YAxis yAxis = lineChart.getAxisLeft();
             yAxis.setTextColor(Color.RED);
@@ -254,7 +241,8 @@ public class LineChartActivity extends AppCompatActivity  {
                 @Override
                 public String getFormattedValue(float value) {
                     Log.v("get_ch",getChooseDate);
-                    if (value >= 0 && datetime.get((int)value).substring(0,10).equals(getChooseDate)&&value <= datetime.size()) {
+                    if (value >= 0 && datetime.get((int)value).substring(0,10).equals(getChooseDate)&&value <= datetime.size())
+                    {
                         return datetime.get((int) value).substring(11,19);
                     }
                     else
@@ -267,15 +255,11 @@ public class LineChartActivity extends AppCompatActivity  {
 
             xAxis.setValueFormatter(valueFormatter);
             LineData lineData = lineChart.getLineData();
-
             ILineDataSet iLineDataSet = lineData.getDataSetByIndex(0);
             ILineDataSet iLineDataSet1 = lineData.getDataSetByIndex(1);
-
-
             if (iLineDataSet == null || iLineDataSet1 == null) {
                 iLineDataSet = createLineSet();
                 iLineDataSet1 = createLineSet2();
-
                 lineData.addDataSet(iLineDataSet);
                 lineData.addDataSet(iLineDataSet1);
 
@@ -293,13 +277,11 @@ public class LineChartActivity extends AppCompatActivity  {
             lineData.notifyDataChanged();
             lineChart.notifyDataSetChanged();
             lineChart.moveViewToX(time);
-
-            //lineData.setValueFormatter(formatter);
         }
     }
 
     private static LineDataSet createLineSet() {
-        LineDataSet lineDataSet = new LineDataSet(null, "出料重量");
+        LineDataSet lineDataSet = new LineDataSet(null, "出料重量(公克g)");
         lineDataSet.setColor(Color.GREEN);
         lineDataSet.setDrawValues(true);//顯示數值
         lineDataSet.setHighlightEnabled(true);
@@ -308,7 +290,7 @@ public class LineChartActivity extends AppCompatActivity  {
         return lineDataSet;
     }
     private static LineDataSet createLineSet2() {
-        LineDataSet lineDataSet1 = new LineDataSet(null, "飼料剩下重量");
+        LineDataSet lineDataSet1 = new LineDataSet(null, "飼料剩下重量(公克g)");
         lineDataSet1.setDrawValues(true);
         lineDataSet1.setColor(Color.YELLOW);
         lineDataSet1.setHighlightEnabled(true);
