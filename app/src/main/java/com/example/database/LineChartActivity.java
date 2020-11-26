@@ -326,6 +326,7 @@ public class LineChartActivity extends AppCompatActivity  {
                     inputStream.close();
                     result=s;
                 }
+
                 datetime.clear();
                 petfood_weight.clear();
                 Leaving_petfood.clear();
