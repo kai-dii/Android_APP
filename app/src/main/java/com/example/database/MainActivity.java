@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btn_line;
+    private Button btn_line,btn_bar;
     private TextView view;
     private String result;
     private ArrayList<Integer> number=new ArrayList<>();
@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         view=findViewById(R.id.view_1);
         btn_line=findViewById(R.id.btn_line);
         btn_line.setOnClickListener(mbtnClickListener);
+        btn_bar=findViewById(R.id.btn_bar);
+        btn_bar.setOnClickListener(mbtnClickListener);
         Thread thread = new Thread(mThread);
         thread.start();
     }
@@ -56,6 +58,12 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(MainActivity.this, LineChartActivity.class);
                 intent.putExtras(bundle);
                 startActivity(intent);
+           }
+           else if(btnid==R.id.btn_bar)
+           {
+               intent = new Intent(MainActivity.this, BarChartActivity.class);
+               intent.putExtras(bundle);
+               startActivity(intent);
            }
 
         }

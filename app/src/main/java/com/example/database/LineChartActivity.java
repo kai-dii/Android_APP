@@ -1,5 +1,6 @@
 package com.example.database;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -80,9 +82,10 @@ public class LineChartActivity extends AppCompatActivity  {
                             Log.v("CHOOSE", getChooseDate);
                             mLineChart.clearValues();
                             mHandler.post(mRunnable);
-                        }
 
+                        }
                     }, mYear, mMonth, mDay).show();
+
                 }
 
             }

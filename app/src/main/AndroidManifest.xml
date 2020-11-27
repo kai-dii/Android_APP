@@ -27,6 +27,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".LineChartActivity"></activity>
+        <activity android:name=".BarChartActivity"></activity>
 
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
